@@ -48,9 +48,6 @@ function StatCounter({ value, suffix = '', label }: StatItemProps) {
 }
 
 export default function About() {
-  const handleDownloadResume = () => {
-    window.open('/resume.pdf', '_blank');
-  };
 
   return (
     <Reveal>
@@ -97,13 +94,14 @@ export default function About() {
                   Kharagpur.
                 </p>
 
-                <button
-                  onClick={handleDownloadResume}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-cyber-pink rounded font-mono font-bold uppercase text-xs tracking-wider text-cyber-pink hover:bg-cyber-pink/10 transition-all"
+                <a
+                  href="/resume.pdf"
+                  download="Divyam_Mishra_Resume.pdf"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-cyber-pink rounded font-mono font-bold uppercase text-xs tracking-wider text-cyber-pink hover:bg-cyber-pink/10 transition-all text-center"
                 >
                   <Download className="w-4 h-4" />
                   Download Resume
-                </button>
+                </a>
               </GlowCard>
             </div>
 
