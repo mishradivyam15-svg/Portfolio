@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import MagneticButton from './ui/MagneticButton';
@@ -9,24 +9,70 @@ import { useAppStore } from '@/lib/store';
 const SPLINE_VIEWER_SRC = 'https://cdn.spline.design/@splinetool/viewer@2.0.46/build/spline-viewer.js';
 const SPLINE_SCENE_URL = 'https://prod.spline.design/2tdGJFW9PAJlxkdI/scene.splinecode';
 
-// `<spline-viewer>` is a browser-native custom element registered by the
-// script above, not a React component — there's no type-safe JSX for it, so
-// it's rendered via createElement with an `any` cast rather than fighting
-// JSX.IntrinsicElements augmentation. The viewer script itself is an ES
-// module (it uses `import.meta` internally) — `type="module"` is required
-// here or the browser throws a syntax error trying to run it as a classic
-// script. Its containing `motion.div` already carries `pointer-events-none`
-// (see below), which the element inherits unless it explicitly opts itself
-// back in; confirmed with an actual wheel-scroll test over Hero that page
-// scrolling is unaffected (the scene doesn't grab the wheel for camera
-// zoom) — only the old blob's bespoke cursor-follow code is gone, since
-// that logic lived on the removed mesh, not something a third-party scene
-// can replicate.
+// The prebuilt `<spline-viewer>` custom element (loaded from Spline's CDN,
+// never touched by Next.js/Turbopack's bundler — a plain browser fetch) is
+// used rather than the lower-level `@splinetool/runtime` package directly.
+// That package's own asset loading (`new URL('boolean_wasm_bg.wasm', ...)`,
+// `'../libs/draco/gltf/draco_wasm_wrapper.js'`, etc.) references filenames
+// that don't match what's actually shipped in the npm package — a genuine
+// packaging defect present across many versions (confirmed: 2.0.30 through
+// 2.0.46 all reference the same mismatched `boolean_wasm_bg.wasm`), not a
+// bundler incompatibility (webpack fails identically to Turbopack). Loading
+// the CDN build instead means the browser resolves everything relative to
+// Spline's own server, so none of that matters.
+//
+// The remaining problem: this viewer auto-selects Three.js's WebGPURenderer
+// whenever the browser grants a WebGPU adapter — which Safari/WebKit does,
+// but its WebGPU implementation threw a genuine validation error on every
+// frame for this scene (`executeBundles: render bundle is not valid, reason
+// = firstIndexOffsetInBytes + indexCount * indexSizeInBytes >
+// m_indexBufferSize`, confirmed by loading the page in Playwright's WebKit
+// engine — Safari's engine family — and reading the real console output),
+// so nothing ever drew: the robot was invisible on Safari while working
+// fine on Chrome. The bundle reads `new URLSearchParams(window.location
+// .search).get('forcegl') === '1'` (found by searching the minified source)
+// to force the classic WebGL pipeline instead — there's no per-element
+// attribute for it, only this page-level diagnostic flag. `history
+// .replaceState` sets it on the current URL just before the viewer script
+// runs (a synchronous call, completing long before the script's network
+// fetch could finish, so the flag is reliably present when the check runs),
+// then reverts it once the scene reports it has finished loading (or after
+// a fallback timeout, in case that event never fires) — restoring the
+// user's actual URL rather than leaving `?forcegl=1` visible.
 function HeroScene() {
+  const viewerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const originalUrl = window.location.href;
+    const forcedUrl = new URL(window.location.href);
+    forcedUrl.searchParams.set('forcegl', '1');
+    window.history.replaceState(null, '', forcedUrl.toString());
+
+    let restored = false;
+    const restoreUrl = () => {
+      if (restored) return;
+      restored = true;
+      window.history.replaceState(null, '', originalUrl);
+    };
+
+    const el = viewerRef.current;
+    el?.addEventListener('load-complete', restoreUrl, { once: true });
+    el?.addEventListener('splineerror', restoreUrl, { once: true });
+    const fallback = setTimeout(restoreUrl, 8000);
+
+    return () => {
+      el?.removeEventListener('load-complete', restoreUrl);
+      el?.removeEventListener('splineerror', restoreUrl);
+      clearTimeout(fallback);
+      restoreUrl();
+    };
+  }, []);
+
   return (
     <>
       <Script src={SPLINE_VIEWER_SRC} type="module" strategy="afterInteractive" />
       {React.createElement('spline-viewer' as any, {
+        ref: viewerRef,
         url: SPLINE_SCENE_URL,
         // The scene's camera framing is baked in and renders much larger/
         // lower than the old blob was tuned for, overlapping the CTA
