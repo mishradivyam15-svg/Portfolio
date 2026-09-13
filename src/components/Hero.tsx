@@ -1,62 +1,48 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, MeshDistortMaterial } from '@react-three/drei';
+import React, { useEffect, useState } from 'react';
+import Script from 'next/script';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import * as THREE from 'three';
 import MagneticButton from './ui/MagneticButton';
 import { useAppStore } from '@/lib/store';
 
-function LiquidMetalBlob() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const { mouse } = useThree();
+const SPLINE_VIEWER_SRC = 'https://cdn.spline.design/@splinetool/viewer@2.0.46/build/spline-viewer.js';
+const SPLINE_SCENE_URL = 'https://prod.spline.design/2tdGJFW9PAJlxkdI/scene.splinecode';
 
-  useFrame((state) => {
-    if (!meshRef.current) return;
-    const t = state.clock.getElapsedTime();
-    meshRef.current.rotation.y = t * 0.15;
-    meshRef.current.rotation.x = THREE.MathUtils.lerp(
-      meshRef.current.rotation.x,
-      mouse.y * 0.3,
-      0.04
-    );
-    meshRef.current.position.x = THREE.MathUtils.lerp(
-      meshRef.current.position.x,
-      mouse.x * 0.4,
-      0.03
-    );
-    meshRef.current.position.y = THREE.MathUtils.lerp(
-      meshRef.current.position.y,
-      mouse.y * 0.2,
-      0.03
-    );
-  });
-
-  return (
-    <mesh ref={meshRef} position={[0, 0, -1.5]}>
-      <icosahedronGeometry args={[1.15, 12]} />
-      <MeshDistortMaterial
-        color="#7c6bb3"
-        metalness={0.85}
-        roughness={0.28}
-        distort={0.3}
-        speed={1.4}
-        envMapIntensity={0.7}
-      />
-    </mesh>
-  );
-}
-
+// `<spline-viewer>` is a browser-native custom element registered by the
+// script above, not a React component — there's no type-safe JSX for it, so
+// it's rendered via createElement with an `any` cast rather than fighting
+// JSX.IntrinsicElements augmentation. The viewer script itself is an ES
+// module (it uses `import.meta` internally) — `type="module"` is required
+// here or the browser throws a syntax error trying to run it as a classic
+// script. Its containing `motion.div` already carries `pointer-events-none`
+// (see below), which the element inherits unless it explicitly opts itself
+// back in; confirmed with an actual wheel-scroll test over Hero that page
+// scrolling is unaffected (the scene doesn't grab the wheel for camera
+// zoom) — only the old blob's bespoke cursor-follow code is gone, since
+// that logic lived on the removed mesh, not something a third-party scene
+// can replicate.
 function HeroScene() {
   return (
-    <Canvas camera={{ position: [0, 0, 6.5], fov: 40 }} dpr={[1, 1.75]}>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[4, 3, 5]} intensity={1.1} color="#ec4899" />
-      <pointLight position={[-4, -2, 3]} intensity={0.9} color="#7c3aed" />
-      <LiquidMetalBlob />
-      <Environment preset="studio" environmentIntensity={0.5} />
-    </Canvas>
+    <>
+      <Script src={SPLINE_VIEWER_SRC} type="module" strategy="afterInteractive" />
+      {React.createElement('spline-viewer' as any, {
+        url: SPLINE_SCENE_URL,
+        // The scene's camera framing is baked in and renders much larger/
+        // lower than the old blob was tuned for, overlapping the CTA
+        // buttons and (on mobile) the tagline. The container itself stays
+        // full-size (100%/100%) so the element's own responsive layout
+        // doesn't crop it — a CSS `scale` + `translateY` shrinks and lifts
+        // the whole rendered scene uniformly instead, landing it back in
+        // roughly the old blob's compact footprint behind the heading.
+        style: {
+          width: '100%',
+          height: '100%',
+          transform: 'scale(0.95) translateY(-14%)',
+          transformOrigin: '50% 50%',
+        },
+      })}
+    </>
   );
 }
 
