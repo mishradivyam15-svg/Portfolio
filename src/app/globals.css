@@ -1,34 +1,32 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-cyber-dark: #050508;
-  --color-cyber-dark-lighter: #0d0e15;
-  --color-cyber-purple: #9d4edd;
-  --color-cyber-cyan: #00f0ff;
-  --color-cyber-pink: #ff007f;
-  --color-cyber-green: #39ff14;
+  --color-cyber-dark: #050308;
+  --color-cyber-dark-lighter: #130d1f;
+  --color-cyber-purple: #4c1d95;
+  --color-cyber-cyan: #a78bfa;
+  --color-cyber-pink: #ec4899;
+  --color-cyber-green: #34d399;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 :root {
-  --cyber-bg: #050508;
-  --cyber-text: #e0e6ed;
-  --cyber-primary: #00f0ff;
-  --cyber-secondary: #ff007f;
-  --cyber-accent: #9d4edd;
-  --cyber-glow-rgb: 0, 240, 255;
-  --cyber-grid-opacity: 0.15;
+  --cyber-bg: #050308;
+  --cyber-text: #f4f1fb;
+  --cyber-primary: #a78bfa;
+  --cyber-secondary: #ec4899;
+  --cyber-accent: #7c3aed;
+  --cyber-glow-rgb: 167, 139, 250;
 }
 
-.neon-light {
-  --cyber-bg: #f0f3f8;
-  --cyber-text: #0d0e15;
-  --cyber-primary: #9d4edd;
-  --cyber-secondary: #ff007f;
-  --cyber-accent: #00f0ff;
-  --cyber-glow-rgb: 157, 78, 221;
-  --cyber-grid-opacity: 0.08;
+.light {
+  --cyber-bg: #f7f5fb;
+  --cyber-text: #1e1330;
+  --cyber-primary: #7c3aed;
+  --cyber-secondary: #db2777;
+  --cyber-accent: #a78bfa;
+  --cyber-glow-rgb: 124, 58, 237;
 }
 
 body {
@@ -39,13 +37,13 @@ body {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-/* Custom Webkit scrollbar for sleek premium aesthetic */
+/* Custom Webkit scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(13, 14, 21, 0.5);
+  background: rgba(19, 13, 31, 0.5);
 }
 ::-webkit-scrollbar-thumb {
   background: var(--cyber-primary);
@@ -55,86 +53,69 @@ body {
   background: var(--cyber-secondary);
 }
 
-/* Custom Cyberpunk Grids, Dot Matrices and scanline overlays */
-.cyber-grid {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(var(--cyber-glow-rgb), var(--cyber-grid-opacity)) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(var(--cyber-glow-rgb), var(--cyber-grid-opacity)) 1px, transparent 1px);
-}
-
-.cyber-dots {
-  background-size: 20px 20px;
-  background-image: radial-gradient(circle, rgba(var(--cyber-glow-rgb), calc(var(--cyber-grid-opacity) * 1.5)) 1px, transparent 1px);
-}
-
-.scanlines {
-  position: relative;
-  overflow: hidden;
-}
-.scanlines::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 2;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-}
-
-/* Cyberpunk Glassmorphism Card style */
+/* Premium violet glass panel */
 .glass-panel {
-  background: rgba(13, 14, 21, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(var(--cyber-glow-rgb), 0.2);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: rgba(19, 13, 31, 0.55);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(var(--cyber-glow-rgb), 0.14);
+  box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.45);
 }
 
-.neon-light .glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(var(--cyber-glow-rgb), 0.15);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+.light .glass-panel {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(var(--cyber-glow-rgb), 0.12);
+  box-shadow: 0 8px 32px 0 rgba(124, 58, 237, 0.08);
 }
 
-/* Hover glow shadow effect */
+/* Restrained hover glow */
 .glow-hover {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .glow-hover:hover {
-  box-shadow: 0 0 15px rgba(var(--cyber-glow-rgb), 0.6);
-  border-color: rgba(var(--cyber-glow-rgb), 0.8);
+  box-shadow: 0 0 24px rgba(var(--cyber-glow-rgb), 0.28);
+  border-color: rgba(var(--cyber-glow-rgb), 0.55);
 }
 
-/* Glow Text */
-.glow-text-primary {
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.2);
-}
-.glow-text-secondary {
-  text-shadow: 0 0 10px rgba(255, 0, 127, 0.5), 0 0 20px rgba(255, 0, 127, 0.2);
-}
-
-/* Hologram Overlay animations */
-@keyframes hologramPulse {
-  0%, 100% { opacity: 0.85; filter: hue-rotate(0deg); }
-  50% { opacity: 0.95; filter: hue-rotate(10deg) brightness(1.2); }
-}
-
-.hologram-effect {
-  animation: hologramPulse 6s infinite ease-in-out;
+/* Liquid-chrome gradient text */
+.chrome-text {
+  background: linear-gradient(
+    115deg,
+    #ffffff 0%,
+    #e4d9ff 22%,
+    #a78bfa 45%,
+    #ec4899 68%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-/* Glitch animation helpers */
-@keyframes glitchAnim {
-  0% { clip-path: inset(40% 0 61% 0); }
-  20% { clip-path: inset(92% 0 1% 0); }
-  40% { clip-path: inset(25% 0 58% 0); }
-  60% { clip-path: inset(80% 0 5% 0); }
-  80% { clip-path: inset(11% 0 85% 0); }
-  100% { clip-path: inset(50% 0 30% 0); }
+@keyframes chromeSheen {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
 }
-.glitch-clip {
-  animation: glitchAnim 1s infinite linear alternate-reverse;
+
+.chrome-text-animate {
+  animation: chromeSheen 8s ease-in-out infinite;
+}
+
+/* Soft ambient glow blob — used for atmospheric depth, not decoration overload */
+.ambient-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

@@ -24,28 +24,31 @@ Skills:
 - Express.js
 - MongoDB
 - MySQL
-- Docker
 - Redis
-- AWS
-- Nginx
 - Next.js
+- Python
+- NumPy, Pandas, Scikit-learn, Matplotlib
+- Machine Learning
+- Agentic AI, AI Agents, LLM Applications, RAG, Tool Calling
 
 Projects:
 - Airbnb Clone
 - Portfolio Website
-- DSA Systems
+- Farm2Door
+- SIF Precursor Detection — an entry for Smart India Hackathon 2026, problem statement SIH26165, built by team NeuroNexus. This is a submission, NOT a confirmed win — never say it won, placed, or was selected unless told otherwise.
 
 Focus:
 - GATE prep
 - Competitive programming
-- DevOps
-- AI/ML
+- Machine Learning
+- Agentic AI
 
 Rules:
 1. Only answer about Divyam.
 2. Keep responses concise.
 3. Be professional.
 4. Refuse unrelated questions politely.
+5. Never state or imply an outcome, award, ranking, or result (e.g. "winning", "placed", "selected") for any project or hackathon unless it is explicitly given to you above — describe SIH26165 only as an entry/submission.
 `;
 
 export async function POST(req: NextRequest) {
@@ -67,7 +70,7 @@ export async function POST(req: NextRequest) {
     const { message } = await req.json();
 
     const completion = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       messages: [
         {
           role: 'system',

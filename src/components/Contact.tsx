@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import GlowCard from './ui/GlowCard';
 import Reveal from './ui/Reveal';
+import MagneticButton from './ui/MagneticButton';
+import { LinkedinIcon } from './ui/BrandIcons';
+import InteractiveHeading from './ui/InteractiveHeading';
 
 interface FormState {
   name: string;
@@ -35,15 +38,11 @@ export default function Contact() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     setLoading(true);
     setSuccess('');
     setError('');
@@ -62,116 +61,76 @@ export default function Contact() {
 
     try {
       const response = await axios.post('/api/contact', form);
-
       if (response.data.success) {
         setSuccess('Message sent successfully.');
-        setForm({
-          name: '',
-          email: '',
-          subject: '',
-          message: '',
-        });
+        setForm({ name: '', email: '', subject: '', message: '' });
       }
     } catch (err: any) {
-      const errMsg =
-        err.response?.data?.error ||
-        'Something went wrong. Please try again.';
-      setError(errMsg);
+      setError(err.response?.data?.error || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const fieldVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.12,
-        duration: 0.5,
-      },
-    }),
   };
 
   return (
     <Reveal>
       <section
         id="contact"
-        className="relative w-full py-24 px-6 md:px-12 z-10 border-t border-cyber-cyan/10"
+        className="relative w-full py-28 px-6 md:px-12 z-10 border-t border-cyber-cyan/10"
       >
         <div className="max-w-4xl mx-auto">
-
-          {/* Header */}
-          <div className="flex flex-col items-center mb-16 text-center">
-            <h2 className="text-3xl md:text-5xl font-black mb-2 text-cyber-cyan">
-              Contact Me
-            </h2>
-
-            <p className="text-xs md:text-sm font-mono text-cyber-text/50 uppercase tracking-widest">
-              Let’s connect, collaborate, or talk about opportunities
+          <div className="flex flex-col items-center mb-14 text-center">
+            <InteractiveHeading text="Let's Connect" className="text-3xl md:text-5xl font-semibold mb-3" />
+            <p className="text-sm text-cyber-text/50 max-w-lg">
+              Reach out directly, or send a message below.
             </p>
           </div>
 
+          <div className="flex justify-center gap-4 mb-12">
+            <MagneticButton
+              as="a"
+              href="mailto:mishradivyam15@gmail.com"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full glass-panel text-sm text-cyber-text/85 hover:text-cyber-cyan transition-colors"
+            >
+              <Mail className="w-4 h-4" /> mishradivyam15@gmail.com
+            </MagneticButton>
+            <MagneticButton
+              as="a"
+              href="https://www.linkedin.com/in/divyam-mishra-b0bb53363/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-full glass-panel text-sm text-cyber-text/85 hover:text-cyber-cyan transition-colors"
+            >
+              <LinkedinIcon className="w-4 h-4" /> LinkedIn
+            </MagneticButton>
+          </div>
+
           <motion.div
-            initial={{ opacity: 0, y: 60 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             <GlowCard className="p-8">
-
-              {/* Header */}
-              <div className="flex items-center gap-2 mb-8 text-cyber-cyan border-b border-cyber-cyan/20 pb-4">
-                <Mail className="w-5 h-5 text-cyber-pink" />
-
-                <span className="font-mono text-xs uppercase tracking-widest font-bold">
-                  Send a Message
-                </span>
-              </div>
-
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6 font-mono text-sm"
-              >
-                {/* Name + Email */}
+              <form onSubmit={handleSubmit} className="space-y-6 text-sm">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                  {['name', 'email'].map((field, index) => (
-                    <motion.div
-                      key={field}
-                      custom={index}
-                      variants={fieldVariants}
-                      initial="hidden"
-                      whileInView="visible"
-                      className="space-y-2"
-                    >
-                      <label className="text-xs text-cyber-text/60 capitalize">
-                        {field}
-                      </label>
-
+                  {(['name', 'email'] as const).map((field) => (
+                    <div key={field} className="space-y-2">
+                      <label className="text-xs text-cyber-text/50 capitalize">{field}</label>
                       <input
                         type={field === 'email' ? 'email' : 'text'}
                         name={field}
-                        value={form[field as keyof FormState]}
+                        value={form[field]}
                         onChange={handleChange}
                         disabled={loading}
                         placeholder={`Your ${field}`}
-                        className="w-full bg-black/60 border border-cyber-cyan/20 rounded px-4 py-3 text-cyber-cyan placeholder-cyber-cyan/40 focus:outline-none focus:border-cyber-pink"
+                        className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-cyber-text placeholder-cyber-text/30 focus:outline-none focus:border-cyber-cyan/50 transition-colors"
                       />
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
 
-                {/* Subject */}
-                <motion.div
-                  custom={2}
-                  variants={fieldVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  className="space-y-2"
-                >
-                  <label className="text-xs text-cyber-text/60">Subject</label>
-
+                <div className="space-y-2">
+                  <label className="text-xs text-cyber-text/50">Subject</label>
                   <input
                     type="text"
                     name="subject"
@@ -179,20 +138,12 @@ export default function Contact() {
                     onChange={handleChange}
                     disabled={loading}
                     placeholder="What is this about?"
-                    className="w-full bg-black/60 border border-cyber-cyan/20 rounded px-4 py-3 text-cyber-cyan placeholder-cyber-cyan/40 focus:outline-none focus:border-cyber-pink"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-cyber-text placeholder-cyber-text/30 focus:outline-none focus:border-cyber-cyan/50 transition-colors"
                   />
-                </motion.div>
+                </div>
 
-                {/* Message */}
-                <motion.div
-                  custom={3}
-                  variants={fieldVariants}
-                  initial="hidden"
-                  whileInView="visible"
-                  className="space-y-2"
-                >
-                  <label className="text-xs text-cyber-text/60">Message</label>
-
+                <div className="space-y-2">
+                  <label className="text-xs text-cyber-text/50">Message</label>
                   <textarea
                     name="message"
                     value={form.message}
@@ -200,59 +151,48 @@ export default function Contact() {
                     rows={5}
                     disabled={loading}
                     placeholder="Write your message here..."
-                    className="w-full bg-black/60 border border-cyber-cyan/20 rounded px-4 py-3 text-cyber-cyan placeholder-cyber-cyan/40 focus:outline-none focus:border-cyber-pink resize-none"
+                    className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-cyber-text placeholder-cyber-text/30 focus:outline-none focus:border-cyber-cyan/50 transition-colors resize-none"
                   />
-                </motion.div>
+                </div>
 
-                {/* Success */}
                 {success && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="p-4 border border-cyber-green/35 bg-cyber-green/5 text-cyber-green rounded flex items-center gap-2"
+                    className="p-4 border border-cyber-green/30 bg-cyber-green/5 text-cyber-green rounded-lg flex items-center gap-2 text-sm"
                   >
                     <CheckCircle2 className="w-5 h-5" />
                     <span>{success}</span>
                   </motion.div>
                 )}
 
-                {/* Error */}
                 {error && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="p-4 border border-cyber-pink/35 bg-cyber-pink/5 text-cyber-pink rounded flex items-center gap-2"
+                    className="p-4 border border-cyber-pink/30 bg-cyber-pink/5 text-cyber-pink rounded-lg flex items-center gap-2 text-sm"
                   >
                     <AlertCircle className="w-5 h-5" />
                     <span>{error}</span>
                   </motion.div>
                 )}
 
-                {/* Submit */}
-                <motion.button
-                  whileHover={{
-                    scale: 1.03,
-                  }}
-                  whileTap={{
-                    scale: 0.98,
-                  }}
+                <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-cyber-cyan to-cyber-accent hover:from-cyber-pink hover:to-cyber-accent text-black font-bold uppercase tracking-wider rounded transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  data-cursor="hover"
+                  className="w-full py-4 bg-gradient-to-r from-cyber-cyan to-cyber-pink text-black font-medium rounded-full transition-opacity hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Sending...
+                      <Loader2 className="w-4 h-4 animate-spin" /> Sending...
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4" />
-                      Send Message
+                      <Send className="w-4 h-4" /> Send Message
                     </>
                   )}
-                </motion.button>
-
+                </button>
               </form>
             </GlowCard>
           </motion.div>

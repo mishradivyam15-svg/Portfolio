@@ -105,7 +105,8 @@ export default function AudioEngine() {
   return (
     <button
       onClick={toggleMusic}
-      className="fixed bottom-6 right-6 z-50 p-3 rounded-full glass-panel hover:border-cyber-primary text-cyber-text transition-all duration-300 flex items-center justify-center cursor-pointer shadow-lg hover:shadow-cyan-500/25"
+      data-cursor="hover"
+      className="fixed bottom-6 right-6 z-50 p-3 rounded-full glass-panel hover:border-cyber-cyan/40 text-cyber-text transition-all duration-300 flex items-center justify-center cursor-pointer"
       aria-label="Toggle ambient background music"
     >
       {musicPlaying ? (
